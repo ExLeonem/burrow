@@ -5,6 +5,9 @@ import Mix.Config
 config :floki, :html_parser, Floki.HTMLParser.FastHtml
 
 
+config :logger, level: :debug
+
+
 # Global configuration for crawlers
 config :burrow, 
     robots: true,
@@ -21,7 +24,7 @@ config :burrow,
     ],
     contact: [
         firstname: "John",
-        lastname: "Doe"
+        lastname: "Doe",
         email: "john.doe@mail.com",
         company: "Some Company"
     ]

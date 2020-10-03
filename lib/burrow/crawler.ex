@@ -1,19 +1,31 @@
 defmodule Burrow.Crawler do
     @behaviour Crawler
+    
 
-    @typedoc """
-
-    """
-    @type name :: string
+    @callback fetch() :: any
+    @callback parse() :: any
+    @callback forward() :: any
 
 
     @doc """
-        Starts the crawler. You can pass 
+        Starts the crawler. Options are getting passed to it.
 
         Parameters:
         - name: The crawler name
     """
-    @spec start(any) :: {:ok, pid} | {:error, reason}
-    def start(opts), do: {:ok, 2022}
+    # @spec start(any) :: {:ok, String.t()}
+    def start(opts) do
+        
+        :nil
+    end
+
+
+
+    # @doc """
+    #     Generate a dynamic dispatch for the crawler
+    # """
+    # defmacro gen_default() do
+
+ # end
 
 end

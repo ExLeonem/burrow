@@ -27,11 +27,10 @@ A framework for creation of (distributed) crawlers.
   - [ ] Varying crawling patterns
   - [ ] Rotating user agents
   - [ ] Configurable use of webdriver like ([Hound](https://github.com/HashNuke/hound), [Wallaby](https://github.com/elixir-wallaby/wallaby))
-  - [ ] Honeypot checks
-  - [ ] Captcha solving services
-  - [ ] Output a log defining which mechanism failed (Collect data on honeypots, javascript execution)
-
-
+  - [ ] Honeypot checks?
+  - [ ] Captcha solving services?
+  - [ ] Output a log defining which mechanism failed (Collect data on honeypots, javascript execution)?
+<!-- - [ ] Middleware for crawler output -->
 
 ## Crawling etiquette
 Yes, there are some rules for crawling web pages in a polite manner. Not following them will most likely get you banned from a page.
