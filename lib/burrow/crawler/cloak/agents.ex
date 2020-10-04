@@ -1,5 +1,7 @@
-defmodule Burrow.Obscure.Agents do
+defmodule Burrow.Crawler.Cloak.Agents do
     @moduledoc """
-        Obscure the user-agent.
+        Load use-agents for rotations.
+
     """
+    
 end

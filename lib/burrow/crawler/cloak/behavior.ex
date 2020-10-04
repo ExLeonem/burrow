@@ -1,4 +1,4 @@
-defmodule Burrow.Obscure.Behavior do
+defmodule Burrow.Crawler.Cloak.Behavior do
     @moduledoc """
         Obscure the crawler behavior, for the crawler to be harder to be identifiable.
 

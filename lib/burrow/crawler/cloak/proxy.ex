@@ -1,4 +1,4 @@
-defmodule Burrow.Obscure.Proxy do
+defmodule Burrow.Crawler.Cloak.Proxy do
     @moduledoc """
         Obscure the client domain.
     """

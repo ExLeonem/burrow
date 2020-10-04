@@ -1,4 +1,4 @@
-defmodule Burrow.Crawler.Obscure do
+defmodule Burrow.Crawler.Cloak do
 
 
 end
