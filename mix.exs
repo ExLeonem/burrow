@@ -22,7 +22,8 @@ defmodule Burrow.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:finch, "~> 0.4.0"},
+      {:castore, "~> 0.1.0"},
+      {:mint, "~> 1.2"},
       {:floki, "~> 0.29.0"},
       {:fast_html, "~> 2.0"},
       {:excoveralls, "~> 0.13.2"},
