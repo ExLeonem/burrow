@@ -1,6 +1,9 @@
 # Burrow
 A framework for creation of (distributed) crawlers.
 
+![elixir](https://img.shields.io/badge/elixir-~%3E1.10-blue)
+
+
 ## Index
 
 1. [Roadmap](#Roadmap)

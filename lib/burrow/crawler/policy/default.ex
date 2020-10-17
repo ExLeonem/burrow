@@ -3,9 +3,8 @@ defmodule Burrow.Crawler.Policy.Default do
     @opts %Burrow.Crawler.Policy{}
 
     
-    def request(url) do
+    def request(_url) do
 
     end
-
-
+    
 end

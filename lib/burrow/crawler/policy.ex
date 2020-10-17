@@ -1,4 +1,32 @@
 defmodule Burrow.Crawler.Policy do
+
+    @moduledoc """
+        Policy regulates the crawling behavior.
+
+        Options:
+            robots: Respect the robots.txt?
+            identify: Identifiy with set contact information?
+            auto_throttle: Throttle options to prevent overloading of target
+                delay: Delay of requests (min-delay)
+                max_delay: Maximum delay of requests
+                target_concurrency: 
+
+            concurrecny: How many parallel crawlers
+                domain: per domain
+                ip: per ip
+            
+            hide: Cloaking options to hide crawling behavior
+                agents: Switch user agents
+                behavior: Switch up crawling behavior
+                proxy: Use proxies for requests
+
+            contact: Contact information to identifiy the crawler
+                firstname: Firstname of the creator
+                lastname: Last name of the creator
+                email: The email of the creator
+                company: The company of the creator
+    """
+
     defstruct [
         robots: true,
         identify: true,
@@ -12,6 +40,11 @@ defmodule Burrow.Crawler.Policy do
             domain: 10,
             ip: 0
         ],
+        hide: [
+            agents: false,
+            behavior: false,
+            proxy: false
+        ],
         contact: [
             firstname: "John",
             lastname: "Doe",
@@ -21,7 +54,8 @@ defmodule Burrow.Crawler.Policy do
     ]
 
     defmodule Spec do
-        @callback request() :: any
-        
+
+        # Request made via policy
+        @callback request(url :: String.t()) :: any
     end
 end

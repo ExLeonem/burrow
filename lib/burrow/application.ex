@@ -5,6 +5,9 @@ defmodule Burrow.Application do
 
   use Application
 
+
+
+  # TODO: Needs to be dynamic supervisor
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: Burrow.Worker.start_link(arg)
