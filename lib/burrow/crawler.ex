@@ -137,6 +137,9 @@ defmodule Burrow.Crawler do
                     Supervisor.init(children, strategy: :one_for_one)
                 end
             end
+
+
+            
         end
     end
 
@@ -162,6 +165,6 @@ defmodule Burrow.Crawler do
         @callback parse(response :: any) :: any
         @callback forward() :: any
 
-        @optional_callback fetch: 1, filter_links: 0
+        @optional_callback fetch: 1, filter_links: 0, forward: 1
     end
 end

@@ -2,6 +2,7 @@ defmodule Burrow.Crawler.Policy do
 
     @moduledoc """
         Policy regulates the crawling behavior.
+        Behavior options for a group of crawlers.
 
         Options:
             robots: Respect the robots.txt?

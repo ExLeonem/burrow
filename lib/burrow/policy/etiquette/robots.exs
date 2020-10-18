@@ -1,4 +1,4 @@
-defmodule Burrow.Etiquette.Robots do
+defmodule Burrow.Crawler.Policy.Etiquette.Robots do
     @moduledoc """
         Process the robots.txt of a webpage and use it's content.
 

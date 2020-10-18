@@ -1,4 +1,4 @@
-defmodule Burrow.Etiquette do
+defmodule Burrow.Policy.Etiquette do
 
     @moduledoc """
         

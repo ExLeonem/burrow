@@ -1,4 +1,4 @@
-defmodule Burrow.Crawler.Policy.Default do
+defmodule Burrow.Policy.Default do
     @behaviour Burrow.Crawler.Policy.Spec
     @opts %Burrow.Crawler.Policy{}
 
@@ -6,5 +6,4 @@ defmodule Burrow.Crawler.Policy.Default do
     def request(_url) do
 
     end
-    
 end

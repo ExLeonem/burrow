@@ -1,4 +1,4 @@
-defmodule Burrow.Crawler.Cloak.Agents do
+defmodule Burrow.Crawler.Policy.Cloak.Agents do
     @moduledoc """
         Load use-agents for rotations.
 

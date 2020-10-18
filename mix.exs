@@ -25,8 +25,8 @@ defmodule Burrow.MixProject do
       {:httpoison, "~> 1.7"},
       {:floki, "~> 0.29.0"},
       {:fast_html, "~> 2.0"},
-      {:excoveralls, "~> 0.13.2"},
       {:ex_doc, "~> 0.22.6", only: :dev},
+      {:excoveralls, "~> 0.13.2", only: :test},
       {:bypass, "~> 2.0", only: :test},
       {:plug_cowboy, "~> 1.0", only: :test}      
     ]
