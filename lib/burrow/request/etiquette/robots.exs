@@ -1,4 +1,4 @@
-defmodule Burrow.Crawler.Policy.Etiquette.Robots do
+defmodule Burrow.Policy.Etiquette.Robots do
     @moduledoc """
         Process the robots.txt of a webpage and use it's content.
 
@@ -24,6 +24,9 @@ defmodule Burrow.Crawler.Policy.Etiquette.Robots do
     end
 
 
-    defp
+    def build_contact() do
+        
+
+    end
 
 end

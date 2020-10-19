@@ -56,7 +56,10 @@ defmodule Burrow.Crawler.Policy do
 
     defmodule Spec do
 
-        # Request made via policy
-        @callback request(url :: String.t()) :: any
+        # Builds options for a specific request
+        @callback build_request_options(url :: String.t()) :: any
+
+        # Register the crawler for 
+        @callback set_timer(policy_options:: any) :: any
     end
 end

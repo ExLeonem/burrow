@@ -22,6 +22,7 @@ defmodule Burrow.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:gen_stage, "~> 1.0"},
       {:httpoison, "~> 1.7"},
       {:floki, "~> 0.29.0"},
       {:fast_html, "~> 2.0"},

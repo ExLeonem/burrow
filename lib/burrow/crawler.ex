@@ -4,14 +4,41 @@ defmodule Burrow.Crawler do
 
         Options:
             name: Set a unique crawler name that will be used.
+            policy: The policy to be used.
+            base_url: Starting point
 
     """
 
     # http://erlang.org/doc/man/pool.html
 
 
-    require Logger
 
+    defmacro crawl_links(has_filter) do
+        
+        if has_filter do
+            
+            quote do
+                def unquote(:extract_links)(document) do
+                    links = Floki.attribute(document, "a", "href")
+                    filtered = apply(__CALLER__.module, :filter_links, [links])
+                    # Do something with filtered links
+
+                    document
+                end 
+            end
+        else
+
+            quote do
+                def unquote(:extract_links)(document) do
+                    links = Floki.attribute(document, "a", "href")
+                    # Do something with the links
+
+                    # Pass the document
+                    document
+                end 
+            end
+        end
+    end
 
     # https://medium.com/learn-elixir/supervisors-and-workers-in-10-minutes-83fbad6f16d1
 
@@ -33,113 +60,129 @@ defmodule Burrow.Crawler do
         depth_limit = Keyword.get(opts, :depth, nil)
 
 
+        # Check if optional functions are exported
+        has_filter = function_exported?(__CALLER__.module, :filter_links, 1)
+        links = crawl_links(has_filter)
+
         quote do
-            @require Floki
+            require Logger
+            require Floki
+            require HTTPoison
             @behavior Burrow.Crawler.Spec
 
-            @name unquote(name)
-            @base_url unquote(base_url)
-            @policy unquote(policy)
 
+            defmodule Worker do
+                
+                @name unquote(name)
+                @base_url unquote(base_url)
+                @policy unquote(policy)
+                @has_filter 
 
-            def run(args) do
+                def run(args) do
 
-                # fetch
-                # |> extract_links
-                # |> filter_links
-            end
+                    # Run scheduler adadpter in here, 
 
+                    content = args |> fetch |> extract_links
+                    apply(unquote(__CALLER__.module), :parse, [content])
+                end
+    
 
-            def test() do
-
-            end
-
-
-            @doc """
-                Fetches the content of a source.
-
-                Parameters:
-                url :: String.t() - The url from which to fetch the content
-            """
-            def fetch(url \\ @base_url) do
-
-
-
-                :nil
-            end
-
-
-            
-            @doc """
-                Extract the links from the html content, pass the content to the parse function.            
-            """
-            def extract_links(content) do
-
-                :nil
-            end
-
-
-
-            defp filter_links() do
-
-                :nil
-            end
-
-            defoverridable run: 1
-
-
-            @doc """
-                https://hexdocs.pm/elixir/master/Supervisor.html#module-child-specification
-            """
-            def child_spec(arg) do
-                %{
-                    id: @name,
-                    start:  {@name, :start_link, [arg]}
-                }
-            end
-
-
-            def start_link(args) do
-                pid = spawn_link(__MODULE__, :run, args)
-            end
-
-
-
-            defmodule Group do
-                @moduledoc """
-                    Supervise a group of crawlers.    
-
+                @doc """
+                    Fetches the content of a source.
+    
+                    Parameters:
+                    url :: String.t() - The url from which to fetch the content
                 """
-                use Supervisor
+                def fetch(url \\ @base_url) do
+
+                    resp = HTTPoison.get!(url)
+
+                    case resp.status_code do
+                        
+                        # Success proceed
+                        200 -> 
+                            {:ok, document} = Floki.parse_document(resp)
+                            document
+
+                        # Potentially blocked by the server
+                        x when x in [303, 400] -> 
+                            Logger.info("The server potentially blocked you. Crawler exiting.")
+                    end
+                end
+    
+
+
+                # @doc """
+                #     Extract the links from the html content, pass the content to the parse function.            
+                # """
+                # def extract_links(document) do
+    
+                #     # Fetch all links
+                #     all_links = Floki.attribute(document, "a", "href")
+
+                #     # Filter links
+                #     if unquote(has_filter) do
+                     
+                #     else
+
+                #     end
+
+
+                #     :nil
+                # end
+
+
+                @doc """
+                    https://hexdocs.pm/elixir/master/Supervisor.html#module-child-specification
+                """
+                def child_spec(arg) do
+                    %{
+                        id: @name,
+                        start:  {@name, :start_link, [arg]}
+                    }
+                end
+    
+    
+                def start_link(args) do
+                    pid = spawn_link(__MODULE__, :run, args)
+                end
+            end
+
+
+
+            # Workerpool will be generated in another directory
+            # defmodule Group do
+            #     @moduledoc """
+            #         Supervise a group of crawlers.    
+
+            #     """
+            #     use Supervisor
         
                 
-                def start_link(init_arg) do
-                    Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
-                end
+            #     def start_link(init_arg) do
+            #         Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+            #     end
 
         
-                @doc """
-                    Arguments:
-                        crawler_count: count,
-                        policy: 
-                """
-                @impl true
-                def init(args) do
+            #     @doc """
+            #         Arguments:
+            #             crawler_count: count,
+            #             policy: 
+            #     """
+            #     @impl true
+            #     def init(args) do
 
-                    crawler_name = unquote(name)
-                    children = Enum.map(1.. unquote(concurrent_count), fn (count) -> 
-                        {unquote(caller_module), [bot_name: "BOT:#{crawler_name}:#{count}"]}
-                    end)
+            #         crawler_name = unquote(name)
+            #         children = Enum.map(1.. unquote(concurrent_count), fn (count) -> 
+            #             {unquote(caller_module), [bot_name: "BOT:#{crawler_name}:#{count}"]}
+            #         end)
 
-                    # URL Queue
-                    children ++ []
+            #         # URL Queue
+            #         children ++ []
         
-                    Supervisor.init(children, strategy: :one_for_one)
-                end
-            end
-
-
-            
+            #         Supervisor.init(children, strategy: :one_for_one)
+            #     end
+            # end
         end
     end
 
@@ -160,11 +203,9 @@ defmodule Burrow.Crawler do
 
 
     defmodule Spec do
-        @callback fetch(url :: String.t()) :: any
-        @callback filter_links() :: any
-        @callback parse(response :: any) :: any
+        @callback filter_links(links :: any) :: any
         @callback forward() :: any
 
-        @optional_callback fetch: 1, filter_links: 0, forward: 1
+        @optional_callback filter_links: 1, forward: 1
     end
 end
