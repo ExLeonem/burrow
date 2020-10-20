@@ -12,34 +12,6 @@ defmodule Burrow.Crawler do
     # http://erlang.org/doc/man/pool.html
 
 
-
-    defmacro crawl_links(has_filter) do
-        
-        if has_filter do
-            
-            quote do
-                def unquote(:extract_links)(document) do
-                    links = Floki.attribute(document, "a", "href")
-                    filtered = apply(__CALLER__.module, :filter_links, [links])
-                    # Do something with filtered links
-
-                    document
-                end 
-            end
-        else
-
-            quote do
-                def unquote(:extract_links)(document) do
-                    links = Floki.attribute(document, "a", "href")
-                    # Do something with the links
-
-                    # Pass the document
-                    document
-                end 
-            end
-        end
-    end
-
     # https://medium.com/learn-elixir/supervisors-and-workers-in-10-minutes-83fbad6f16d1
 
     @doc """
@@ -50,8 +22,9 @@ defmodule Burrow.Crawler do
 
 
         # Crawler name for identification, defaults to caller module name
-        caller_module = __CALLER__.module |> to_string |> String.replace(".", "")
-        name = Keyword.get(opts, :name, caller_module)
+        caller_module = __CALLER__.module 
+        caller_module_string = caller_module |> to_string |> String.replace(".", "")
+        name = Keyword.get(opts, :name, caller_module_string)
 
         base_url = Keyword.get(opts, :base_url, nil)
         policy = Keyword.get(opts, :policy, Burrow.Crawler.Policy.Default)
@@ -62,7 +35,6 @@ defmodule Burrow.Crawler do
 
         # Check if optional functions are exported
         has_filter = function_exported?(__CALLER__.module, :filter_links, 1)
-        links = crawl_links(has_filter)
 
         quote do
             require Logger
@@ -111,25 +83,27 @@ defmodule Burrow.Crawler do
                 end
     
 
-
-                # @doc """
-                #     Extract the links from the html content, pass the content to the parse function.            
-                # """
-                # def extract_links(document) do
+                if unquote(has_filter) do
+                    def extract_links(document) do
+                        links = Floki.attribute(document, "a", "href")
+                        filtered = apply(unquote(__CALLER__.module), :filter_links, [links])
+                        # Do something with the links
     
-                #     # Fetch all links
-                #     all_links = Floki.attribute(document, "a", "href")
+                        # Pass the document on
+                        document
+                    end     
+                else
 
-                #     # Filter links
-                #     if unquote(has_filter) do
-                     
-                #     else
+                    def extract_links(document) do
+                        links = Floki.attribute(document, "a", "href")
+                        # Do something with filtered links
 
-                #     end
+                        
+                        # Pass The document on
+                        document
+                    end 
+                end
 
-
-                #     :nil
-                # end
 
 
                 @doc """
@@ -151,38 +125,57 @@ defmodule Burrow.Crawler do
 
 
             # Workerpool will be generated in another directory
-            # defmodule Group do
-            #     @moduledoc """
-            #         Supervise a group of crawlers.    
+            defmodule Pool do
+                @moduledoc """
+                    Supervise a group of crawlers.    
 
-            #     """
-            #     use Supervisor
+                """
+                use Supervisor
         
-                
-            #     def start_link(init_arg) do
-            #         Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
-            #     end
+                defp poolboy_config do
+                    [
+                        name: {:local, unquote(name <> "-pool" )},
+                        worker_module: unquote(Module.concat(caller_module, Worker)),
+                        size: 10,
+                        max_overflow: 2
+                    ]
+                end
+
+
+                def start(_type, _args) do
+                    children = [
+                        :poolboy.child_spec(:worker, poolboy_config())
+                    ]
+
+                    opts = [strategy: :one_for_one, name: unquote(Module.concat(caller_module, Pool, Supervisor))]
+                    Supervisor.start_link(children, opts)
+                end
+
+
+                # def start_link(init_arg) do
+                #     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+                # end
 
         
-            #     @doc """
-            #         Arguments:
-            #             crawler_count: count,
-            #             policy: 
-            #     """
-            #     @impl true
-            #     def init(args) do
+                # @doc """
+                #     Arguments:
+                #         crawler_count: count,
+                #         policy: 
+                # """
+                # @impl true
+                # def init(args) do
 
-            #         crawler_name = unquote(name)
-            #         children = Enum.map(1.. unquote(concurrent_count), fn (count) -> 
-            #             {unquote(caller_module), [bot_name: "BOT:#{crawler_name}:#{count}"]}
-            #         end)
+                #     crawler_name = unquote(name)
+                #     children = Enum.map(1.. unquote(concurrent_count), fn (count) -> 
+                #         {unquote(caller_module), [bot_name: "BOT:#{crawler_name}:#{count}"]}
+                #     end)
 
-            #         # URL Queue
-            #         children ++ []
+                #     # URL Queue
+                #     children ++ []
         
-            #         Supervisor.init(children, strategy: :one_for_one)
-            #     end
-            # end
+                #     Supervisor.init(children, strategy: :one_for_one)
+                # end
+            end
         end
     end
 

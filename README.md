@@ -20,6 +20,7 @@ A framework for creation of (distributed) crawlers.
 ## Roadmap
 
 - [ ] Configuration of Crawler (User-Agent Token, User Agent String)
+- [ ] Replace floki with [html5ever](#https://hex.pm/packages/html5ever)? 
 - [ ] Crawling etiquette
   - [ ] Auto throttle of requests
   - [ ] Parse & Use robots.txt
